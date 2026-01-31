@@ -220,7 +220,6 @@
                         <input type="checkbox" id="remember" name="remember">
                         <label for="remember">Onthoud mij</label>
                     </div>
-                    <a href="#" class="forgot-link">Wachtwoord vergeten?</a>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-submit">Inloggen</button>

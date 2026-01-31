@@ -10,6 +10,7 @@ use App\Models\User;                       // Ons User model
 
 class AuthController extends Controller
 {
+   // Check te veel foute pogingen
     /**
      * ═══════════════════════════════════════════════════
      * REGISTRATIE
