@@ -61,10 +61,10 @@ class Rental extends Model
      * 
      * Gebruik: $rental->vehicle (geeft het voertuig dat gehuurd is)
      */
-    // public function vehicle(): BelongsTo
-    // {
-    //     return $this->belongsTo(Vehicle::class);
-    // }
+    public function vehicle(): BelongsTo
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
 
     /**
      * ═══════════════════════════════════════════════════

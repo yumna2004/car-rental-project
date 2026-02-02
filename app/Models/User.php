@@ -53,4 +53,11 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+    /**
+     * Relatie: Een User heeft meerdere Rentals
+     */
+    public function rentals()
+    {
+        return $this->hasMany(Rental::class);
+    }
 }
