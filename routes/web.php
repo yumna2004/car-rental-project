@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\VehicleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -25,38 +26,11 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
-// Voertuigen overzicht met filters (demo paginator)
-Route::get('/vehicles', function () {
-    $vehicles = new \Illuminate\Pagination\LengthAwarePaginator(
-        [], // items (leeg voor nu)
-        0,  // total items
-        12, // per page
-        request()->get('page', 1), // current page
-        ['path' => request()->url(), 'query' => request()->query()]
-    );
+// Voertuigen overzicht - NU MET ECHTE DATA!
+Route::get('/vehicles', [VehicleController::class, 'index'])->name('vehicles.index');
 
-    return view('vehicles-index', compact('vehicles'));
-})->name('vehicles.index');
-
-// Voertuig detail pagina (demo voertuig)
-Route::get('/vehicles/{id}', function ($id) {
-    $vehicle = (object)[
-        'id' => $id,
-        'title' => 'Demo Voertuig',
-        'description' => 'Dit is een demo voertuig. Vervang met echte data uit database.',
-        'category' => 'personenauto',
-        'price_per_day' => 50.00,
-        'region' => 'Amsterdam',
-        'transmission' => 'automaat',
-        'image' => null,
-    ];
-
-    // US19 demo velden
-    $isReserved = false;
-    $reservationEndDate = null;
-
-    return view('vehicle-show', compact('vehicle', 'isReserved', 'reservationEndDate'));
-})->name('vehicles.show');
+// Voertuig detail pagina - NU MET ECHTE DATA!
+Route::get('/vehicles/{id}', [VehicleController::class, 'show'])->name('vehicles.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -146,9 +120,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/rentals/{id}', function ($id) {
         return back()->with('success', 'Reservering geannuleerd (Demo mode)');
     })->name('rentals.cancel');
-
-
-
 
     // ✅ ACCOUNT VERWIJDEREN
     Route::delete('/profile', function (Request $request) {
