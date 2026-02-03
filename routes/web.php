@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\RentalController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -105,21 +106,17 @@ Route::middleware(['auth'])->group(function () {
         return back()->with('success', 'Profiel bijgewerkt!');
     })->name('user.profile.update');
 
-    // Huurgeschiedenis (demo)
-    Route::get('/history', function () {
-        $rentals = collect([]);
-        return view('user-history', compact('rentals'));
-    })->name('user.history');
+    // Huurgeschiedenis
+    Route::get('/history', [RentalController::class, 'history'])
+        ->name('user.history');
 
-    // Reservering maken (demo)
-    Route::post('/rentals', function () {
-        return back()->with('success', 'Voertuig gereserveerd! (Demo mode)');
-    })->name('rentals.store');
+    // Reservering maken
+    Route::post('/vehicles/{id}/rent', [RentalController::class, 'store'])
+        ->name('vehicles.rent');
 
-    // Reservering annuleren (demo)
-    Route::delete('/rentals/{id}', function ($id) {
-        return back()->with('success', 'Reservering geannuleerd (Demo mode)');
-    })->name('rentals.cancel');
+    // Reservering annuleren
+    Route::delete('/rentals/{id}', [RentalController::class, 'cancel'])
+        ->name('rentals.cancel');
 
     // ✅ ACCOUNT VERWIJDEREN
     Route::delete('/profile', function (Request $request) {
@@ -149,7 +146,9 @@ Route::middleware(['auth'])->group(function () {
         return redirect()->route('home')->with('success', 'Je account is succesvol verwijderd. We hopen je ooit weer terug te zien! 👋');
     })->name('user.profile.delete');
 });
-
+// Reservering maken (buiten auth middleware)
+Route::post('/vehicles/{id}/rent', [RentalController::class, 'store'])
+    ->name('vehicles.rent');
 /*
 |--------------------------------------------------------------------------
 | Admin Routes

@@ -392,10 +392,9 @@
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('rentals.store') }}" class="booking-form">
+                        <form method="POST" action="{{ route('vehicles.rent', $vehicle->id) }}" class="booking-form">
                             @csrf
-                            <input type="hidden" name="vehicle_id" value="{{ $vehicle->id }}">
-
+                            {{-- vehicle_id niet meer nodig, zit in URL --}}
                             <div class="form-group">
                                 <label for="start_date">Startdatum</label>
                                 <input type="date" id="start_date" name="start_date" class="form-control" required
