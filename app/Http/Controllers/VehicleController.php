@@ -7,12 +7,7 @@ use Illuminate\Http\Request;
 
 class VehicleController extends Controller
 {
-    /**
-     * Toon alle voertuigen (met paginatie)
-     * 
-     * Route: GET /vehicles
-     * View: vehicles-index.blade.php
-     */
+
     public function index(Request $request)
     {
         // Start met alle voertuigen
