@@ -44,7 +44,34 @@ class RentalController extends Controller
             'end_date.required' => 'Einddatum is verplicht',
             'end_date.after_or_equal' => 'Einddatum moet na of op de startdatum zijn',
         ]);
+        // 8.1 US19 - CHECK OF VOERTUIG AL GERESERVEERD IS
+        $hasOverlap = Rental::where('vehicle_id', $vehicle->id)
+            ->where(function ($query) use ($validated) {
+                // Check alle mogelijke overlap scenario's
+                $query->where(function ($q) use ($validated) {
+                    // Scenario 1: Nieuwe start valt binnen bestaande reservering
+                    $q->where('start_date', '<=', $validated['start_date'])
+                        ->where('end_date', '>=', $validated['start_date']);
+                })
+                    ->orWhere(function ($q) use ($validated) {
+                        // Scenario 2: Nieuwe eind valt binnen bestaande reservering
+                        $q->where('start_date', '<=', $validated['end_date'])
+                            ->where('end_date', '>=', $validated['end_date']);
+                    })
+                    ->orWhere(function ($q) use ($validated) {
+                        // Scenario 3: Nieuwe reservering omvat hele bestaande
+                        $q->where('start_date', '>=', $validated['start_date'])
+                            ->where('end_date', '<=', $validated['end_date']);
+                    });
+            })
+            ->exists();
 
+        // Als er overlap is, stop en geef error
+        if ($hasOverlap) {
+            return back()
+                ->withInput()
+                ->with('error', '⚠️ Dit voertuig is al gereserveerd in de gekozen periode. Kies andere datums.');
+        }
         // 7.3 PRIJS BEREKENEN
         $startDate = Carbon::parse($validated['start_date']);
         $endDate = Carbon::parse($validated['end_date']);
@@ -77,9 +104,11 @@ class RentalController extends Controller
      */
     public function history()
     {
-        // Haal alle rentals van de ingelogde user met voertuig info
-        $rentals = Auth::user()
-            ->rentals()
+    // Haal alle rentals van de ingelogde user met voertuig info
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        $rentals = $user->rentals()
             ->with('vehicle')
             ->orderBy('created_at', 'desc')
             ->get();

@@ -63,9 +63,19 @@ class VehicleController extends Controller
         // Haal voertuig op, of geef 404 als niet bestaat
         $vehicle = Vehicle::findOrFail($id);
 
-        // US19 demo velden (later implementeren we dit echt)
-        $isReserved = false;
-        $reservationEndDate = null;
+        // 8.2 & 8.3 US19 - Check of voertuig NU gereserveerd is
+        $currentReservation = \App\Models\Rental::where('vehicle_id', $vehicle->id)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->first();
+
+        // Is er een actieve reservering?
+        $isReserved = $currentReservation !== null;
+
+        // Wanneer is het weer beschikbaar?
+        $reservationEndDate = $currentReservation
+            ? $currentReservation->end_date->format('d-m-Y')
+            : null;
 
         return view('vehicle-show', compact('vehicle', 'isReserved', 'reservationEndDate'));
     }

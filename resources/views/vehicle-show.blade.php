@@ -279,19 +279,19 @@
         }
 
         .reserved-badge {
-            background: var(--danger);
-            color: white;
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid var(--accent-amber);
+            color: var(--text-light);
             padding: 1rem 1.5rem;
             border-radius: 8px;
             text-align: center;
             margin-bottom: 1rem;
-            font-weight: 600;
         }
 
         .reserved-info {
             font-size: 0.9rem;
             margin-top: 0.5rem;
-            opacity: 0.9;
+            color: var(--accent-amber);
         }
 
         @media (max-width: 1024px) {
@@ -383,28 +383,40 @@
                         <a href="{{ route('register') }}" class="btn btn-secondary"
                             style="width: 100%; margin-top: 1rem;">Account Aanmaken</a>
                     @else
+                        {{-- Info badge als voertuig NU bezet is --}}
                         @if (isset($isReserved) && $isReserved)
                             <div class="reserved-badge">
-                                ⚠️ Momenteel Gereserveerd
+                                ℹ️ Momenteel Bezet
                                 <div class="reserved-info">
                                     Beschikbaar vanaf: {{ $reservationEndDate ?? 'binnenkort' }}
+                                </div>
+                                <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.8;">
+                                    💡 Tip: Je kunt wel reserveren voor latere datums
                                 </div>
                             </div>
                         @endif
 
                         <form method="POST" action="{{ route('vehicles.rent', $vehicle->id) }}" class="booking-form">
                             @csrf
-                            {{-- vehicle_id niet meer nodig, zit in URL --}}
+
                             <div class="form-group">
                                 <label for="start_date">Startdatum</label>
                                 <input type="date" id="start_date" name="start_date" class="form-control" required
-                                    min="{{ date('Y-m-d') }}" {{ isset($isReserved) && $isReserved ? 'disabled' : '' }}>
+                                    min="{{ date('Y-m-d') }}" value="{{ old('start_date') }}">
+                                @error('start_date')
+                                    <span
+                                        style="color: #ef4444; font-size: 0.875rem; display: block; margin-top: 0.25rem;">{{ $message }}</span>
+                                @enderror
                             </div>
 
                             <div class="form-group">
                                 <label for="end_date">Einddatum</label>
                                 <input type="date" id="end_date" name="end_date" class="form-control" required
-                                    min="{{ date('Y-m-d') }}" {{ isset($isReserved) && $isReserved ? 'disabled' : '' }}>
+                                    min="{{ date('Y-m-d') }}" value="{{ old('end_date') }}">
+                                @error('end_date')
+                                    <span
+                                        style="color: #ef4444; font-size: 0.875rem; display: block; margin-top: 0.25rem;">{{ $message }}</span>
+                                @enderror
                             </div>
 
                             <div class="total-price" id="totalPriceBox" style="display: none;">
@@ -414,9 +426,8 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary btn-book"
-                                {{ isset($isReserved) && $isReserved ? 'disabled' : '' }}>
-                                {{ isset($isReserved) && $isReserved ? '🔒 Niet Beschikbaar' : '✓ Reserveren' }}
+                            <button type="submit" class="btn btn-primary btn-book">
+                                ✓ Reserveren
                             </button>
                         </form>
                     @endguest
