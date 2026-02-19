@@ -120,12 +120,80 @@
             align-items: center;
             justify-content: center;
             font-size: 8rem;
+            position: relative;
         }
 
         .main-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .gallery-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .gallery-nav-btn:hover {
+            background: rgba(245, 158, 11, 0.9);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .gallery-nav-btn.prev {
+            left: 1rem;
+        }
+
+        .gallery-nav-btn.next {
+            right: 1rem;
+        }
+
+        .image-counter {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 10;
+        }
+
+        .thumbnails-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: var(--primary-dark);
+        }
+
+        .thumbnail-img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .thumbnail-img:hover {
+            transform: scale(1.05);
+        }
+
+        .thumbnail-img.active {
+            border-color: var(--accent-amber);
         }
 
         .vehicle-sidebar {
@@ -321,6 +389,12 @@
             .specs-grid {
                 grid-template-columns: 1fr;
             }
+
+            .gallery-nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
         }
     </style>
 @endsection
@@ -360,13 +434,48 @@
         <div class="vehicle-main">
             <!-- Gallery -->
             <div class="vehicle-gallery">
-                <div class="main-image">
-                    @if ($vehicle->image)
-                        <img src="{{ asset('storage/' . $vehicle->image) }}" alt="{{ $vehicle->title }}">
-                    @else
-                        🚗
+                @php
+                    // Verzamel alle foto's (hoofdfoto + extra foto's)
+                    $allImages = [];
+                    if ($vehicle->image) {
+                        $allImages[] = $vehicle->image;
+                    }
+                    if ($vehicle->images && is_array($vehicle->images)) {
+                        $allImages = array_merge($allImages, $vehicle->images);
+                    }
+                @endphp
+
+                @if (count($allImages) > 0)
+                    <!-- Main Display -->
+                    <div class="main-image">
+                        <img id="mainImage" src="{{ asset('storage/' . $allImages[0]) }}" alt="{{ $vehicle->title }}">
+
+                        @if (count($allImages) > 1)
+                            <!-- Navigation Arrows -->
+                            <button id="prevBtn" class="gallery-nav-btn prev">❮</button>
+                            <button id="nextBtn" class="gallery-nav-btn next">❯</button>
+
+                            <!-- Image Counter -->
+                            <div class="image-counter">
+                                <span id="currentIndex">1</span> / {{ count($allImages) }}
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Thumbnails -->
+                    @if (count($allImages) > 1)
+                        <div class="thumbnails-grid">
+                            @foreach ($allImages as $index => $img)
+                                <img src="{{ asset('storage/' . $img) }}" alt="{{ $vehicle->title }}"
+                                    class="thumbnail-img {{ $index === 0 ? 'active' : '' }}"
+                                    data-index="{{ $index }}" onclick="showImage({{ $index }})">
+                            @endforeach
+                        </div>
                     @endif
-                </div>
+                @else
+                    <!-- No images fallback -->
+                    <div class="main-image">🚗</div>
+                @endif
             </div>
 
             <!-- Sidebar - Booking -->
@@ -492,12 +601,64 @@
             }
         }
 
-        startDateInput.addEventListener('change', calculateTotal);
-        endDateInput.addEventListener('change', calculateTotal);
+        if (startDateInput && endDateInput) {
+            startDateInput.addEventListener('change', calculateTotal);
+            endDateInput.addEventListener('change', calculateTotal);
+            startDateInput.addEventListener('change', function() {
+                endDateInput.min = this.value;
+            });
+        }
 
-        // Set min date for end date based on start date
-        startDateInput.addEventListener('change', function() {
-            endDateInput.min = this.value;
-        });
+        // 📸 GALLERY NAVIGATION
+        @php
+            $allImages = [];
+            if ($vehicle->image) {
+                $allImages[] = $vehicle->image;
+            }
+            if ($vehicle->images && is_array($vehicle->images)) {
+                $allImages = array_merge($allImages, $vehicle->images);
+            }
+        @endphp
+
+        @if (count($allImages) > 1)
+            const images = @json(array_map(function ($img) {
+                    return asset('storage/' . $img);
+                }, $allImages));
+            let currentIndex = 0;
+
+            function showImage(index) {
+                currentIndex = index;
+                document.getElementById('mainImage').src = images[index];
+                document.getElementById('currentIndex').textContent = index + 1;
+
+                // Update thumbnail active state
+                document.querySelectorAll('.thumbnail-img').forEach((thumb, i) => {
+                    if (i === index) {
+                        thumb.classList.add('active');
+                    } else {
+                        thumb.classList.remove('active');
+                    }
+                });
+            }
+
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                currentIndex = (currentIndex - 1 + images.length) % images.length;
+                showImage(currentIndex);
+            });
+
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                currentIndex = (currentIndex + 1) % images.length;
+                showImage(currentIndex);
+            });
+
+            // Keyboard navigation (arrow keys)
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    document.getElementById('prevBtn').click();
+                } else if (e.key === 'ArrowRight') {
+                    document.getElementById('nextBtn').click();
+                }
+            });
+        @endif
     </script>
 @endsection

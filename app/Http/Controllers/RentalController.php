@@ -12,7 +12,6 @@ class RentalController extends Controller
 {
     /**
      * Reservering opslaan
-     * 
      * Route: POST /vehicles/{id}/rent
      */
     public function store(Request $request, $id)
@@ -26,7 +25,7 @@ class RentalController extends Controller
         // Haal voertuig op
         $vehicle = Vehicle::findOrFail($id);
 
-        // 7.2 DATUM VALIDATIE
+        // DATUM VALIDATIE
         $validated = $request->validate([
             'start_date' => [
                 'required',
@@ -44,10 +43,9 @@ class RentalController extends Controller
             'end_date.required' => 'Einddatum is verplicht',
             'end_date.after_or_equal' => 'Einddatum moet na of op de startdatum zijn',
         ]);
-        // 8.1 US19 - CHECK OF VOERTUIG AL GERESERVEERD IS
+        // CHECK OF VOERTUIG AL GERESERVEERD IS
         $hasOverlap = Rental::where('vehicle_id', $vehicle->id)
             ->where(function ($query) use ($validated) {
-                // Check alle mogelijke overlap scenario's
                 $query->where(function ($q) use ($validated) {
                     // Scenario 1: Nieuwe start valt binnen bestaande reservering
                     $q->where('start_date', '<=', $validated['start_date'])
@@ -72,7 +70,8 @@ class RentalController extends Controller
                 ->withInput()
                 ->with('error', '⚠️ Dit voertuig is al gereserveerd in de gekozen periode. Kies andere datums.');
         }
-        // 7.3 PRIJS BEREKENEN
+
+        // PRIJS BEREKENEN
         $startDate = Carbon::parse($validated['start_date']);
         $endDate = Carbon::parse($validated['end_date']);
 
@@ -82,7 +81,7 @@ class RentalController extends Controller
         // Bereken totaalprijs
         $totalPrice = $days * $vehicle->price_per_day;
 
-        // 7.4 RESERVERING OPSLAAN
+        // RESERVERING OPSLAAN
         $rental = Rental::create([
             'user_id' => Auth::id(),
             'vehicle_id' => $vehicle->id,
@@ -91,7 +90,7 @@ class RentalController extends Controller
             'total_price' => $totalPrice,
         ]);
 
-        // 7.5 BEVESTIGING TONEN
+        // BEVESTIGING TONEN
         return redirect()
             ->route('vehicles.show', $vehicle->id)
             ->with('success', "✅ Reservering gelukt! Je hebt {$vehicle->title} gereserveerd van {$startDate->format('d-m-Y')} tot {$endDate->format('d-m-Y')} voor €" . number_format($totalPrice, 2) . " ({$days} dagen).");
@@ -99,7 +98,6 @@ class RentalController extends Controller
 
     /**
      * Toon verhuurgeschiedenis van ingelogde user
-     * 
      * Route: GET /history
      */
     public function history()

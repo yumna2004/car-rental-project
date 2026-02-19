@@ -453,8 +453,10 @@
                                                 style="display: inline;">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-icon"
-                                                    onclick="return confirm('Weet je zeker dat je dit voertuig wilt verwijderen?')">🗑️</button>
+                                                <button type="submit" class="btn btn-danger btn-small"
+                                                    onclick="return confirm('Weet je zeker dat je dit voertuig wilt verwijderen?')">
+                                                    Verwijderen
+                                                </button>
                                             </form>
                                         </div>
                                     </td>

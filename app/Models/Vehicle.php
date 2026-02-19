@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Vehicle extends Model
 {
@@ -19,9 +20,11 @@ class Vehicle extends Model
         'region',
         'transmission',
         'image',
+        'images',
         'availability_start',
         'availability_end',
     ];
+    use HasFactory;
 
     /**
      * Type casting voor specifieke velden
@@ -30,6 +33,7 @@ class Vehicle extends Model
         'price_per_day' => 'decimal:2',        // Altijd 2 decimalen (49.99)
         'availability_start' => 'date',        // Carbon date object
         'availability_end' => 'date',          // Carbon date object
+        'images' => 'array',
     ];
 
     /**

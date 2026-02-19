@@ -19,7 +19,7 @@ return new class extends Migration
                 ->constrained()
                 ->onDelete('cascade');
 
-            // Foreign key naar vehicles tabel (Sally maakt deze)
+            // Foreign key naar vehicles tabel
             $table->foreignId('vehicle_id')
                 ->constrained()
                 ->onDelete('cascade');
