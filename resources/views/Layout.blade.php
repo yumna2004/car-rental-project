@@ -425,8 +425,6 @@
                 <ul>
                     <li><a href="{{ route('home') }}">Home</a></li>
                     <li><a href="{{ route('vehicles.index') }}">Voertuigen</a></li>
-                    <li><a href="#">Contact</a></li>
-                    <li><a href="#">Over Ons</a></li>
                 </ul>
             </div>
             <div class="footer-section">
