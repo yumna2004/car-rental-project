@@ -430,15 +430,6 @@
                 </ul>
             </div>
             <div class="footer-section">
-                <h3>Service</h3>
-                <ul>
-                    <li><a href="#">Veelgestelde Vragen</a></li>
-                    <li><a href="#">Voorwaarden</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Klantenservice</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
                 <h3>Contact</h3>
                 <ul>
                     <li>Email: info@autorental.nl</li>
