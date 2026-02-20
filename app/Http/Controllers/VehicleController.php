@@ -13,7 +13,7 @@ class VehicleController extends Controller
         // Start met alle voertuigen
         $query = Vehicle::query();
 
-        // 🔍 ZOEKEN - Filter op titel of beschrijving
+        // ZOEKEN - Filter op titel of beschrijving
         if ($request->filled('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
@@ -22,22 +22,22 @@ class VehicleController extends Controller
             });
         }
 
-        // 📦 CATEGORIE - Filter op categorie
+        // CATEGORIE - Filter op categorie
         if ($request->filled('category')) {
             $query->where('category', $request->input('category'));
         }
 
-        // 📍 REGIO - Filter op regio
+        // REGIO - Filter op regio
         if ($request->filled('region')) {
             $query->where('region', $request->input('region'));
         }
 
-        // ⚙️ TRANSMISSIE - Filter op transmissie
+        // TRANSMISSIE - Filter op transmissie
         if ($request->filled('transmission')) {
             $query->where('transmission', $request->input('transmission'));
         }
 
-        // 💰 PRIJS - Filter op maximale prijs per dag
+        // PRIJS - Filter op maximale prijs per dag
         if ($request->filled('max_price')) {
             $query->where('price_per_day', '<=', $request->input('max_price'));
         }

@@ -30,9 +30,9 @@ class Vehicle extends Model
      * Type casting voor specifieke velden
      */
     protected $casts = [
-        'price_per_day' => 'decimal:2',        // Altijd 2 decimalen (49.99)
-        'availability_start' => 'date',        // Carbon date object
-        'availability_end' => 'date',          // Carbon date object
+        'price_per_day' => 'decimal:2',        
+        'availability_start' => 'date',       
+        'availability_end' => 'date',        
         'images' => 'array',
     ];
 
@@ -48,11 +48,7 @@ class Vehicle extends Model
     }
 
     /**
-     * Helper: Check of voertuig beschikbaar is voor een periode
-     * 
-     * @param string $startDate (YYYY-MM-DD)
-     * @param string $endDate (YYYY-MM-DD)
-     * @return bool
+     * Helper: Voortuig beschikbarheid checken
      */
     public function isAvailableForPeriod($startDate, $endDate): bool
     {
@@ -72,10 +68,7 @@ class Vehicle extends Model
     }
 
     /**
-     * Helper: Krijg prijs voor aantal dagen
-     * 
-     * @param int $days
-     * @return float
+     * Helper: Aantal dagen prijs berekening
      */
     public function getPriceForDays(int $days): float
     {

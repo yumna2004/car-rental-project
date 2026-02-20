@@ -9,9 +9,6 @@ use Carbon\Carbon;
 
 class Rental extends Model
 {
-    /**
-     * Dit zijn de velden die je kunt invullen bij Rental::create()
-     */
     protected $fillable = [
         'user_id',
         'vehicle_id',
@@ -54,29 +51,16 @@ class Rental extends Model
      * HELPER FUNCTIES - STATUS CHECKS
      */
 
-    /**
-     * Is deze rental nu actief?
-     * (tussen start_date en end_date)
-     * @return bool
-     */
     public function isActive(): bool
     {
         return now()->between($this->start_date, $this->end_date);
     }
 
-    /**
-     * Begint deze rental in de toekomst?
-     * @return bool
-     */
     public function isUpcoming(): bool
     {
         return now()->lt($this->start_date);
     }
 
-    /**
-     * Is deze rental al afgelopen?
-     * @return bool
-     */
     public function isCompleted(): bool
     {
         return now()->gt($this->end_date);
@@ -86,32 +70,25 @@ class Rental extends Model
      * ACCESSORS (Automatische Attributen)
      */
 
-    /**
-     * Krijg de status als tekst
-     */
+    /* Status als tekst voorgeven*/
     public function getStatusAttribute(): string
     {
         if ($this->isActive()) {
-            return 'active';      // nu bezig
+            return 'active';  
         } elseif ($this->isUpcoming()) {
-            return 'upcoming';    // n de toekomst
+            return 'upcoming'; 
         } else {
-            return 'completed';   //al voorbij
+            return 'completed'; 
         }
     }
 
-    /**
-     * Bereken aantal dagen
-     */
+    /* Bereken aantal dagen */
     public function getDaysAttribute(): int
     {
         return $this->start_date->diffInDays($this->end_date);
     }
 
-    /**
-     * Krijg een mooie status tekst in het Nederlands
-     * Returns: "Actief", "Binnenkort", of "Voltooid"
-     */
+    /* Status */
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {
@@ -122,15 +99,13 @@ class Rental extends Model
         };
     }
 
-    /**
-     * Krijg een mooie kleur voor de status (voor badges)
-     */
+    /* Status kleur */
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
-            'active' => 'green',      // Groen voor actief
-            'upcoming' => 'blue',     // Blauw voor binnenkort
-            'completed' => 'gray',    // Grijs voor voltooid
+            'active' => 'green',  
+            'upcoming' => 'blue',    
+            'completed' => 'gray',    
             default => 'gray',
         };
     }

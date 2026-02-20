@@ -328,7 +328,7 @@
                         {{ isset($vehicle) ? '💾 Wijzigingen Opslaan' : '➕ Voertuig Toevoegen' }}
                     </button>
                     <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">
-                        ❌ Annuleren
+                         Annuleren
                     </a>
                 </div>
             </form>
