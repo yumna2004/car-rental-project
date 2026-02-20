@@ -385,7 +385,7 @@
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-small"
                                             onclick="return confirm('Weet je zeker dat je deze reservering wilt annuleren?')">
-                                            ❌ Annuleren
+                                            Annuleren
                                         </button>
                                     </form>
                                 @endif
