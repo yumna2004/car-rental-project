@@ -276,6 +276,10 @@
                 overflow-x: auto;
                 flex-wrap: nowrap;
             }
+
+            .btn.btn-danger.btn-small {
+            padding: 13px;
+            }
         }
     </style>
 @endsection
